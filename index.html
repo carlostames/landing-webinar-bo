@@ -165,12 +165,16 @@ document.addEventListener('DOMContentLoaded', async function() {
       window.Babel.transformScriptTags();
     }
     // --- HubSpot Form Injection (post-unpack, classic API) ---
+    // Immediately hide and clear the mock form to prevent flash
+    var slotEarly = document.getElementById('hs-form-slot');
+    if (slotEarly) {
+      slotEarly.style.visibility = 'hidden';
+      slotEarly.innerHTML = '';
+    }
     setTimeout(function() {
       var slot = document.getElementById('hs-form-slot');
       if (slot) {
-        // Clear any placeholder/mock content to avoid duplicates
-        slot.innerHTML = '';
-        // Load classic HubSpot Forms v2 script (no React hydration issues)
+        // Load classic HubSpot Forms v2 script
         var hsScript = document.createElement('script');
         hsScript.charset = 'utf-8';
         hsScript.type = 'text/javascript';
@@ -181,13 +185,16 @@ document.addEventListener('DOMContentLoaded', async function() {
               region: 'na1',
               portalId: '2264976',
               formId: '6bdb7f58-ffdf-4dcf-9651-f2c9fc411339',
-              target: '#hs-form-slot'
+              target: '#hs-form-slot',
+              onFormReady: function() {
+                slot.style.visibility = 'visible';
+              }
             });
           }
         };
         document.head.appendChild(hsScript);
       }
-    }, 1500);
+    }, 500);
     // --- End HubSpot Injection ---
   } catch (err) {
     setStatus('Error unpacking: ' + err.message);

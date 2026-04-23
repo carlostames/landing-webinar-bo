@@ -174,11 +174,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     setTimeout(function() {
       var slot = document.getElementById('hs-form-slot');
       if (slot) {
-        // Load classic HubSpot Forms v2 script
         var hsScript = document.createElement('script');
         hsScript.charset = 'utf-8';
         hsScript.type = 'text/javascript';
-        hsScript.src = '//js.hsforms.net/forms/embed/v2.js';
+        hsScript.src = 'https://js.hsforms.net/forms/embed/v2.js';
         hsScript.onload = function() {
           if (window.hbspt && window.hbspt.forms) {
             window.hbspt.forms.create({
@@ -186,10 +185,14 @@ document.addEventListener('DOMContentLoaded', async function() {
               portalId: '2264976',
               formId: '6bdb7f58-ffdf-4dcf-9651-f2c9fc411339',
               target: '#hs-form-slot',
-              onFormReady: function() {
+              onFormReady: function($form) {
                 slot.style.visibility = 'visible';
               }
             });
+            // Fallback: ensure slot is visible after 3s no matter what
+            setTimeout(function() {
+              slot.style.visibility = 'visible';
+            }, 3000);
           }
         };
         document.head.appendChild(hsScript);
